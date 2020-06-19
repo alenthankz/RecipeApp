@@ -1,21 +1,21 @@
-import { Injectable} from '@angular/core';
-import { Recipe } from './recipe.model';
-import {Ingredient} from '../shared/ingredient.model'
-import { ShoppingListService } from '../shopping-list/shopping-list.service';
-import { Subject } from 'rxjs';
+import { Injectable } from '@angular/core';
+import { Subject } from 'rxjs/Subject';
 
-@Injectable({
-  providedIn: 'root'
-})
+import { Recipe } from './recipe.model';
+import { Ingredient } from '../shared/ingredient.model';
+import { ShoppingListService } from '../shopping-list/shopping-list.service';
+
+@Injectable()
 export class RecipeService {
-  recipesChanged =new Subject<Recipe[]>();
+  recipesChanged = new Subject<Recipe[]>();
+
   private recipes: Recipe[] = [
     new Recipe(
-      'Grilled steak ',
-      'A super-tasty steak with french fries ',
-      'https://lh3.googleusercontent.com/proxy/YLStQgowbT1i2Sv2ns9OAcRvsmc6r8wBTfFqC-h9YYPGkUvwkYIMyWD67QhaUpNv3AWDCzknE7UJv3DAs7WOSsEGPqCoyYovXWma7F5c9PYijpr8Us12JujeLxlIXG-sRort9LWquw1Qsc57qQyyV_jxhto',
+      'Tasty Schnitzel',
+      'A super-tasty Schnitzel - just awesome!',
+      'https://upload.wikimedia.org/wikipedia/commons/7/72/Schnitzel.JPG',
       [
-        new Ingredient('Meat', 3),
+        new Ingredient('Meat', 1),
         new Ingredient('French Fries', 20)
       ]),
     new Recipe('Big Fat Burger',
@@ -26,32 +26,33 @@ export class RecipeService {
         new Ingredient('Meat', 1)
       ])
   ];
-  getRecipes(){
+
+  constructor(private slService: ShoppingListService) {}
+
+  getRecipes() {
     return this.recipes.slice();
   }
-  getRecipe(index:number){
+
+  getRecipe(index: number) {
     return this.recipes[index];
   }
-  constructor(private slService : ShoppingListService) { }
 
-  addIngredientsToShoppingList(ingrdients : Ingredient[]){
-     for(let ingredient of ingrdients){
-       this.slService.addIngredient(ingredient);
-     }
+  addIngredientsToShoppingList(ingredients: Ingredient[]) {
+    this.slService.addIngredients(ingredients);
   }
 
-  addRecipe(recipe:Recipe){
+  addRecipe(recipe: Recipe) {
     this.recipes.push(recipe);
-    this.recipesChanged.next(this.recipes.slice())
-  }
-  updateRecipe(index: number,newRecipe:Recipe){
-    this.recipes[index]=newRecipe;
-    this.recipesChanged.next(this.recipes.slice())
-
-  }
-  deleteRecipe(index:number){
-    this.recipes.splice(index,1);
     this.recipesChanged.next(this.recipes.slice());
   }
 
+  updateRecipe(index: number, newRecipe: Recipe) {
+    this.recipes[index] = newRecipe;
+    this.recipesChanged.next(this.recipes.slice());
+  }
+
+  deleteRecipe(index: number) {
+    this.recipes.splice(index, 1);
+    this.recipesChanged.next(this.recipes.slice());
+  }
 }
