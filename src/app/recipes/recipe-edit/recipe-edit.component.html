@@ -3,7 +3,8 @@
         <form  [formGroup]="recipeForm" (ngSubmit)="onSubmit" >
             <div class="row">
                 <div class="col-xs-12">
-                    <button class="btn btn-primary" type="submit" style="margin-right: 5px;">save</button>
+                    <button class="btn btn-primary" type="submit" style="margin-right: 5px;"
+                    [disabled]="!recipeForm.valid">{{!editMode?'Add':'Update'}}</button>
                     <button class="btn btn-danger" type="danger">cancel</button>
                 </div>
             </div>

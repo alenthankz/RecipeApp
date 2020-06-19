@@ -8,11 +8,12 @@ import { Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class RecipeService {
+  recipesChanged =new Subject<Recipe[]>();
   private recipes: Recipe[] = [
     new Recipe(
       'Grilled steak ',
       'A super-tasty steak with french fries ',
-      'https://previews.123rf.com/images/gbh007/gbh0071712/gbh007171200468/92226027-grilled-steak-with-french-fries-on-white-background.jpg',
+      'https://lh3.googleusercontent.com/proxy/YLStQgowbT1i2Sv2ns9OAcRvsmc6r8wBTfFqC-h9YYPGkUvwkYIMyWD67QhaUpNv3AWDCzknE7UJv3DAs7WOSsEGPqCoyYovXWma7F5c9PYijpr8Us12JujeLxlIXG-sRort9LWquw1Qsc57qQyyV_jxhto',
       [
         new Ingredient('Meat', 3),
         new Ingredient('French Fries', 20)
@@ -38,4 +39,15 @@ export class RecipeService {
        this.slService.addIngredient(ingredient);
      }
   }
+
+  addRecipe(recipe:Recipe){
+    this.recipes.push(recipe);
+    this.recipesChanged.next(this.recipes.slice())
+  }
+  updateRecipe(index: number,newRecipe:Recipe){
+    this.recipes[index]=newRecipe;
+    this.recipesChanged.next(this.recipes.slice())
+
+  }
+
 }
