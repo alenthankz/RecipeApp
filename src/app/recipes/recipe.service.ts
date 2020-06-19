@@ -10,11 +10,11 @@ import { Subject } from 'rxjs';
 export class RecipeService {
   private recipes: Recipe[] = [
     new Recipe(
-      'Tasty Schnitzel',
-      'A super-tasty Schnitzel - just awesome!',
-      'https://upload.wikimedia.org/wikipedia/commons/7/72/Schnitzel.JPG',
+      'Grilled steak ',
+      'A super-tasty steak with french fries ',
+      'https://previews.123rf.com/images/gbh007/gbh0071712/gbh007171200468/92226027-grilled-steak-with-french-fries-on-white-background.jpg',
       [
-        new Ingredient('Meat', 1),
+        new Ingredient('Meat', 3),
         new Ingredient('French Fries', 20)
       ]),
     new Recipe('Big Fat Burger',
