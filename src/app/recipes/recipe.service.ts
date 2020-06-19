@@ -8,7 +8,6 @@ import { Subject } from 'rxjs';
   providedIn: 'root'
 })
 export class RecipeService {
-  recipeSelected=new Subject<Recipe>();
   private recipes: Recipe[] = [
     new Recipe(
       'Tasty Schnitzel',
