@@ -1,6 +1,6 @@
 on development
 
-
+Not mobile responisve as of now
 
 https://recipeappbckend.web.app
 check out here
