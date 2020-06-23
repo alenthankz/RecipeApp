@@ -1,7 +1,10 @@
 import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { catchError } from 'rxjs/operators';
-import { throwError } from 'rxjs';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { catchError, tap } from 'rxjs/operators';
+import { throwError, Subject, BehaviorSubject } from 'rxjs';
+
+import { User } from './user.model';
+import { Router } from '@angular/router';
 
 export interface AuthResponseData {
   kind: string;
@@ -15,12 +18,18 @@ export interface AuthResponseData {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  constructor(private http: HttpClient) {}
+  user = new BehaviorSubject<User>(null);
+  
 
+  constructor(private http: HttpClient,private router:Router) {}
+  logout(){
+    this.user.next(null);
+    this.router.navigate(['./auth']);
+  }
   signup(email: string, password: string) {
     return this.http
       .post<AuthResponseData>(
-        'https://www.googleapis.com/identitytoolkit/v3/relyingparty/signupNewUser?key=AIzaSyD4_XAdbrsV6aQcdpGYlPcM84cLv5x_NBA',
+        'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyD4_XAdbrsV6aQcdpGYlPcM84cLv5x_NBA',
         {
           email: email,
           password: password,
@@ -28,27 +37,68 @@ export class AuthService {
         }
       )
       .pipe(
-        catchError(errorRes => {
-          let errorMessage = 'An unknown error occurred!';
-          if (!errorRes.error || !errorRes.error.error) {
-            return throwError(errorMessage);
-          }
-          switch (errorRes.error.error.message) {
-            case 'EMAIL_EXISTS':
-              errorMessage = 'This email exists already';
-          }
-          return throwError(errorMessage);
+        catchError(this.handleError),
+        tap(resData => {
+          this.handleAuthentication(
+            resData.email,
+            resData.localId,
+            resData.idToken,
+            +resData.expiresIn
+          );
         })
       );
   }
 
-  login(email:string,password:string){
-   return  this.http.post<AuthResponseData>('https://securetoken.googleapis.com/v1/token?key=AIzaSyD4_XAdbrsV6aQcdpGYlPcM84cLv5x_NBA',
-      {
-        email: email,
-        password: password,
-        returnSecureToken: true
-      }
-    );
+  login(email: string, password: string) {
+    return this.http
+      .post<AuthResponseData>(
+        'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyD4_XAdbrsV6aQcdpGYlPcM84cLv5x_NBA',
+        {
+          email: email,
+          password: password,
+          returnSecureToken: true
+        }
+      )
+      .pipe(
+        catchError(this.handleError),
+        tap(resData => {
+          this.handleAuthentication(
+            resData.email,
+            resData.localId,
+            resData.idToken,
+            +resData.expiresIn
+          );
+        })
+      );
+  }
+
+  private handleAuthentication(
+    email: string,
+    userId: string,
+    token: string,
+    expiresIn: number
+  ) {
+    const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
+    const user = new User(email, userId, token, expirationDate);
+    this.user.next(user);
+  }
+
+  private handleError(errorRes: HttpErrorResponse) {
+    let errorMessage = 'An unknown error occurred!';
+    if (!errorRes.error || !errorRes.error.error) {
+      return throwError(errorMessage);
+    }
+    switch (errorRes.error.error.message) {
+      case 'EMAIL_EXISTS':
+        errorMessage = 'This email exists already';
+        break;
+      case 'EMAIL_NOT_FOUND':
+        errorMessage = 'This email does not exist.';
+        break;
+      case 'INVALID_PASSWORD':
+        errorMessage = 'This password is not correct.';
+        break;
+    }
+    return throwError(errorMessage);
   }
 }
