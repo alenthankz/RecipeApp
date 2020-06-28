@@ -16,3 +16,6 @@ steps: \
 6.logout (or it will expire after 1 hr) 
 
 enjoy :)
+
+
+please run the before deployment commit for localhost 
