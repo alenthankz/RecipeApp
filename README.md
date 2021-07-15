@@ -1,6 +1,3 @@
-on development
-
-Not mobile responisive as of now
 
 https://recipeappbckend.web.app
 check out here
@@ -15,7 +12,11 @@ steps: \
 5.manage -> save data \
 6.logout (or it will expire after 1 hr) 
 
-enjoy :)
+Explore :)
+
+
+This project involves a web app where the user can add recipes and subsequently add the required ingredients for given recipes to the shopping list.
+The aim of this project was to digitize the process of writing down on paper the household requirement of ingredients.
 
 
 please run the before deployment commit for localhost 
